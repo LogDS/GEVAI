@@ -1,2 +1,2 @@
 # GEVAI
-Generam Explainable and Verifiable Artificial Intelligence
+General Explainable and Verifiable Artificial Intelligence
