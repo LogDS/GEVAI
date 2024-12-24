@@ -1,0 +1,12 @@
+pandas~=1.5.3
+numpy==1.23.5
+pyyaml
+keras==2.11.0
+matplotlib
+tensorflow==2.11.0
+shap==0.40.0
+torch
+keras-visualizer
+simpy
+dtcontrol
+expecttest

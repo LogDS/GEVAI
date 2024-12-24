@@ -1,0 +1,12 @@
+[build-system]
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "GEVAI"
+version = "0.0.1"
+dependencies = ["pandas~=1.5.3", "numpy==1.23.5", "pyyaml", "keras==2.11.0", "matplotlib", "tensorflow==2.11.0", "shap==0.40.0", "torch", "simpy", "expecttest"]
+
+[tool.scikit-build]
+wheel.packages = ["python/src/GEVAI"]
+cmake.build-type = "Release"
