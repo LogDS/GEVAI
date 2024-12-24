@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 /.venv/
 /DATASETS/
 /LOGS/
+=======
+>>>>>>> bbb76c963ee2d0816aae17977dd9fc79073d75b6
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
