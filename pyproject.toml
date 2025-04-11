@@ -1,12 +1,29 @@
-[build-system]
-requires = ["scikit-build-core", "pybind11"]
-build-backend = "scikit_build_core.build"
-
-[project]
+[tool.poetry]
 name = "GEVAI"
 version = "0.0.1"
-dependencies = ["pandas~=1.5.3", "numpy==1.23.5", "pyyaml", "keras==2.11.0", "matplotlib", "tensorflow==2.11.0", "shap==0.40.0", "torch", "simpy", "expecttest"]
+description = "Non-cohesive framework for General Explainable and Verifiable Artificial Intelligence."
+authors = ["Oliver R. Fox <o.fox3@newcastle.ac.uk>", "Giacomo Bergami <Giacomo.Bergami@newcastle.ac.uk"]
+readme = "README.md"
+packages = [{include = "*", from="python/src"}]
 
-[tool.scikit-build]
-wheel.packages = ["python/src/GEVAI"]
-cmake.build-type = "Release"
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "*"
+numpy = "*"
+pyyaml = "*"
+keras = "*"
+matplotlib = "*"
+tensorflow = { version = "==2.17.1", extras = ["and-cuda"] }
+nvidia-tensorrt = "*"
+shap = "*"
+torch = "*"
+keras-visualizer = "*"
+simpy = "*"
+dtcontrol = "*"
+expecttest = "*"
+lime = "*"
+alibi = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -24,6 +24,9 @@ def unison_shuffled_copies(a, b):
 
 
 def clean_log():
+    log_directory = 'LOGS/'
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
     filelist = os.listdir('LOGS/')
     for file in filelist:
         if os.path.isfile('LOGS/{}'.format(file)):

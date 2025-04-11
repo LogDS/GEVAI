@@ -1,5 +1,4 @@
 import math
-
 import shap
 
 from GEVAI.expost.ExPost import ExPost
@@ -12,8 +11,8 @@ class KerasShapely(ExPost):
         self.howMuchSample = conf.howMuchSample
 
     def acceptingType(self):
-        import keras.engine.sequential
-        return keras.engine.sequential.Sequential
+        from keras.models import Sequential
+        return Sequential
 
     def __call__(self, *args, **kwargs):
         """
@@ -22,15 +21,15 @@ class KerasShapely(ExPost):
         """
         if 'training_x' in kwargs:
             model = args[0]
-            import matplotlib.pyplot as pl
+            import matplotlib.pyplot as plt
             training_x = kwargs['training_x']
             howSample = min(math.ceil(self.howMuchSample * len(training_x)), len(training_x))
             from GEVAI.utils import fullname
             h = fullname(model)
-            if h == 'keras.engine.sequential.Sequential':
+            if h == 'keras.src.models.sequential.Sequential':
                 # shap.explainers._deep.deep_tf.op_handlers["AddV2"] = shap.explainers._deep.deep_tf.passthrough
                 explainer = shap.KernelExplainer(model, training_x[:howSample])
                 shap_values = explainer.shap_values(training_x)
                 shap.summary_plot(shap_values, training_x, max_display=self.maxdisplay,show=False)  # .png,.pdf will also support here
-                pl.savefig("shap_summary.svg",dpi=700)
-                pl.show()
+                plt.savefig(f"shap_summary_{model.name}.svg",dpi=700)
+                plt.show()

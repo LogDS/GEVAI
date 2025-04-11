@@ -3,10 +3,10 @@ Original source: https://github.com/codeaway23/MLPNAS/
 """
 
 import math
-import keras.backend as K
+import tensorflow.python.keras.backend as K
 import shap
-from keras.utils import to_categorical
-from keras.utils.data_utils import pad_sequences
+from keras.api.utils import to_categorical
+from keras.api.utils import pad_sequences
 import torch
 from GEVAI.adhoc.mlpnas.controller import Controller
 from GEVAI.adhoc.mlpnas.mlp_generator import MLPGenerator

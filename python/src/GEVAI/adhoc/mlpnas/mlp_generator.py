@@ -139,9 +139,9 @@ class MLPGenerator(MLPSearchSpace):
 
     def compile_model(self, model):
         if self.mlp_optimizer == 'sgd':
-            optim = optimizers.SGD(lr=self.mlp_lr, decay=self.mlp_decay, momentum=self.mlp_momentum)
+            optim = optimizers.SGD(learning_rate=self.mlp_lr, decay=self.mlp_decay, momentum=self.mlp_momentum)
         else:
-            optim = getattr(optimizers, self.mlp_optimizer)(lr=self.mlp_lr, decay=self.mlp_decay)
+            optim = getattr(optimizers, self.mlp_optimizer)(learning_rate=self.mlp_lr, decay=self.mlp_decay)
         model.compile(loss=self.mlp_loss_func, optimizer=optim, metrics=self.metrics)
         return model
 
@@ -165,7 +165,7 @@ class MLPGenerator(MLPSearchSpace):
                     if config_ids[j] == bigram_ids[i]:
                         search_index.append(i)
                 if len(search_index) == 0:
-                    self.shared_weights = self.shared_weights.append({'bigram_id': config_ids[j],
+                    self.shared_weights = self.shared_weights._append({'bigram_id': config_ids[j],
                                                                       'weights': layer.get_weights()},
                                                                      ignore_index=True)
                 else:

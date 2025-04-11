@@ -27,8 +27,8 @@ def data_loading(file, col, shuffle=False):
         return (x,y,colN)
 
 if __name__ == "__main__":
-    file_conf = "parameters.yaml"
-    action = "explain" #"load", "training", "testing", "explain"
+    file_conf = "black_box_parameters.yaml"
+    action = "training" # "load", "training", "testing", "explain"
     if len(sys.argv) > 1:
         file_conf = sys.argv[1]
     if len(sys.argv) > 2:

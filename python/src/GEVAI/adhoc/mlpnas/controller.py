@@ -3,8 +3,8 @@ import numpy as np
 from keras import optimizers
 from keras.layers import Dense, LSTM
 from keras.models import Model
-from keras.engine.input_layer import Input
-from keras.utils.data_utils import pad_sequences
+from keras import Input
+from keras.utils import pad_sequences
 
 from GEVAI.adhoc.mlpnas.mlp_generator import MLPSearchSpace
 
@@ -17,7 +17,7 @@ class Controller(MLPSearchSpace):
         self.controller_decay = conf.CONTROLLER_DECAY
         self.controller_momentum = conf.CONTROLLER_MOMENTUM
         self.use_predictor = conf.CONTROLLER_USE_PREDICTOR
-        self.controller_weights = 'LOGS/controller_weights.h5'
+        self.controller_weights = 'LOGS/controller.weights.h5'
         self.seq_data = []
 
         super().__init__(conf.TARGET_CLASSES, conf.nodes, conf.activation_functions)
@@ -68,9 +68,9 @@ class Controller(MLPSearchSpace):
 
     def train_control_model(self, model, x_data, y_data, loss_func, controller_batch_size, nb_epochs):
         if self.controller_optimizer == 'sgd':
-            optim = optimizers.SGD(lr=self.controller_lr, decay=self.controller_decay, momentum=self.controller_momentum, clipnorm=1.0)
+            optim = optimizers.SGD(learning_rate=self.controller_lr, decay=self.controller_decay, momentum=self.controller_momentum, clipnorm=1.0)
         else:
-            optim = getattr(optimizers, self.controller_optimizer)(lr=self.controller_lr, decay=self.controller_decay, clipnorm=1.0)
+            optim = getattr(optimizers, self.controller_optimizer)(learning_rate=self.controller_lr, decay=self.controller_decay, clipnorm=1.0)
         model.compile(optimizer=optim, loss={'main_output': loss_func})
         if os.path.exists(self.controller_weights):
             model.load_weights(self.controller_weights)
@@ -93,9 +93,9 @@ class Controller(MLPSearchSpace):
 
     def train_hybrid_model(self, model, x_data, y_data, pred_target, loss_func, controller_batch_size, nb_epochs):
         if self.controller_optimizer == 'sgd':
-            optim = optimizers.SGD(lr=self.controller_lr, decay=self.controller_decay, momentum=self.controller_momentum, clipnorm=1.0)
+            optim = optimizers.SGD(learning_rate=self.controller_lr, decay=self.controller_decay, momentum=self.controller_momentum, clipnorm=1.0)
         else:
-            optim = getattr(optimizers, self.controller_optimizer)(lr=self.controller_lr, decay=self.controller_decay, clipnorm=1.0)
+            optim = getattr(optimizers, self.controller_optimizer)(learning_rate=self.controller_lr, decay=self.controller_decay, clipnorm=1.0)
         model.compile(optimizer=optim,
                       loss={'main_output': loss_func, 'predictor_output': 'mse'},
                       loss_weights={'main_output': 1, 'predictor_output': 1})
