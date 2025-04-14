@@ -34,7 +34,7 @@ class KerasLime(ExPost):
             from GEVAI.utils import fullname
             h = fullname(model)
             mode, predict_fn = None, None
-            if h == 'keras.src.models.sequential.Sequential':
+            if h == 'keras.src.models.sequential.Sequential' or h == 'sklearn.tree._classes.DecisionTreeClassifier':
                 try:
                     mode = "classification" if (len(model.output_shape) > 1 and model.output_shape[-1] > 1) else "regression"
                     predict_fn = lambda x: model.predict(x) if mode == "classification" else lambda x: model.predict(x).flatten()
@@ -64,3 +64,5 @@ class KerasLime(ExPost):
                     plt.tight_layout()
                     plt.savefig(f"lime_explanation_{model.name}_{i}.png")
                     plt.show()
+            else:
+                print("Unsupported LIME explainer")

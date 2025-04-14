@@ -18,7 +18,7 @@ if __name__ == '__main__':
     benchmarking_file_path = os.path.join("benchmark.csv")
     benchmarking.init_file(benchmarking_file_path)  # Load configuration,Load dataset,Ad hoc type,Get all ad hoc explainers,Load ad hoc explainers,Ad hoc model,Ex post (BlackBox),Ex post (ModelAgnostic)
 
-    conf = "black_box_parameters.yaml"
+    conf = "/home/giacomo/PyCharmProjects/GEVAI/black_box_parameters.yaml"
     ## Loading the configuration for the entire architecture
     start_time = time.time()
     conf = get_a_priori_explainer("Configuration", conf)
@@ -35,8 +35,9 @@ if __name__ == '__main__':
     ## Use "MLPNAS_pretrained" if you already run the model over the dataset, so to use the persisted outcome
     ## of the model being trained, ad MLPNAS if you need to train this for the first time
     start_time = time.time()
-    explainer_type = "MLPNAS"  # MLPNAS / MLPNAS_pretrained / GenericAlgorithm
+    explainer_type = "DecisionTree"  # MLPNAS / MLPNAS_pretrained / GenericAlgorithm
     ad_hoc = get_ad_hoc_explainer(explainer_type, conf)
+    models = list(ad_hoc(*df))
     end_time = time.time()
 
     generating_ad_hoc_time, loading_ad_hoc_time = None, None
@@ -45,9 +46,10 @@ if __name__ == '__main__':
     else:
         generating_ad_hoc_time = end_time - start_time
 
-    ex_post_explainers = ["BlackBoxExplainer", "Shapely", "LIME"]
-    for model in list(ad_hoc(*df))[:2]:
-        benchmarking.write_to_file(benchmarking_file_path, f"{loading_config_time},{loading_dataset_time},{explainer_type},{generating_ad_hoc_time},{loading_ad_hoc_time},{model.name},")
+    ex_post_explainers = ["BlackBoxExplainer", "WhiteBoxExplainer", "LIME", "Shapely"]
+    for model in models[:2]:
+        ## TODO. Oliver, not all implemetations of Ad Hoc have a name. If no name attribute is available, you can use explainer_type
+        # benchmarking.write_to_file(benchmarking_file_path, f"{loading_config_time},{loading_dataset_time},{explainer_type},{generating_ad_hoc_time},{loading_ad_hoc_time},{model.name},")
         loading_config_time, loading_dataset_time, generating_ad_hoc_time, loading_ad_hoc_time = None, None, None, None
 
         for ex_post_explainer in ex_post_explainers:

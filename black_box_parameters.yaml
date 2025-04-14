@@ -32,14 +32,36 @@ nodes: [8, 16, 32, 64, 128, 256, 512]
 activation_functions: ['sigmoid', 'tanh', 'relu', 'elu']
 
 ########################################################
+#                DECISION TREE PARAMETERS              #
+########################################################
+DT_MAX_DEPTH: [8, 16, 32, 64, 128, 256, 512]
+DT_MIN_SAMPLES_SPLIT: [2, 5, 10]
+DT_CRITERION: ['gini', 'entropy']
+FOLD_CROSS_VALIDATION: 5
+
+########################################################
+#                RipperK PARAMETERS              #
+########################################################
+RK_Random: [0,1,2,3,4,5,6,7]
+RK_K:      [2,3,4,5,6]
+RK_PRUNE:  [0.25, 0.33, 0.5, 0.66, 0.5]
+RK_DL_ALLOWANCE: [64]
+RK_N_DISCRETIZE_BINS: [5, 10, 15, 20, 25, 30]
+
+
+########################################################
 #                   DATA PARAMETERS                    #
 ########################################################
 TARGET_CLASSES: 3
-IS_TARGET_CATEGORICAL: yes
+IS_TARGET_CATEGORICAL: no
+FORCE_TARGET_NUMERICAL: yes # YES for DecisionTree, no otherwise
+IS_TARGET_DATAFRAME: no # YES for RRULES, no otherwise
 DATA_SHUFFLE: false
 CLASS_COLUMN: "quality_label"
-CSV_TRAINING: "/home/giacomo/PyCharmProjects/MLPNAS2/DATASETS/wine-quality.csv"
-CSV_TESTING: "/home/giacomo/PyCharmProjects/MLPNAS2/DATASETS/wine-quality.csv"
+CSV_TRAINING: "/home/giacomo/PyCharmProjects/GEVAI/DATASETS/wine-quality.csv"
+CSV_TESTING: "/home/giacomo/PyCharmProjects/GEVAI/DATASETS/wine-quality.csv"
+
+
 
 ########################################################
 #                  OUTPUT PARAMETERS                   #

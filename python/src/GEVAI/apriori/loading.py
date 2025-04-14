@@ -27,6 +27,12 @@ def data_loading(conf):
     colN = xd.columns
     if conf.IS_TARGET_CATEGORICAL:
         y = pd.get_dummies(data[col]).values
+    elif conf.IS_TARGET_DATAFRAME:
+        y = pd.DataFrame({col: data.get(col)})
+    elif conf.FORCE_TARGET_NUMERICAL:
+        from sklearn import preprocessing
+        label_encoder = preprocessing.LabelEncoder()
+        y = label_encoder.fit_transform(data[col])
     else:
         y = data[col].values
     if shuffle:
