@@ -161,7 +161,18 @@ class WhiteBoxExplainer(ExPost):
         from GEVAI.utils import fullname
         h = fullname(hypothesis)
         if h == 'sklearn.tree._classes.DecisionTreeClassifier':
+            print("TODO: Oliver, please store this information, too!!")
             return [export_text2(hypothesis)]
+        elif h == 'wittgenstein.ripper.RIPPER':
+            print("TODO: Oliver, please store this information, too!!")
+            ruleset_str = (
+                str([str(rule) for rule in hypothesis.ruleset_.rules])
+                .replace(" ", "")
+                .replace(",", " V\n")
+                .replace("'", "")
+                .replace("^", " ^ ")
+            )
+            return [ruleset_str]
         else:
             print("Unsupported BlackBox explainer")
             return []

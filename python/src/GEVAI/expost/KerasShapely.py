@@ -29,7 +29,7 @@ class KerasShapely(ExPost):
             if h == 'keras.src.models.sequential.Sequential':
                 # shap.explainers._deep.deep_tf.op_handlers["AddV2"] = shap.explainers._deep.deep_tf.passthrough
                 explainer = shap.KernelExplainer(model, training_x[:howSample])
-            elif h == 'sklearn.tree._classes.DecisionTreeClassifier':
+            elif h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER':
                 explainer = shap.KernelExplainer(model.predict_proba, training_x[:howSample])
             shap_values = explainer.shap_values(training_x)
             shap.summary_plot(shap_values, training_x, max_display=self.maxdisplay,

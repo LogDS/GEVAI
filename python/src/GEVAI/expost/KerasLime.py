@@ -34,7 +34,7 @@ class KerasLime(ExPost):
             from GEVAI.utils import fullname
             h = fullname(model)
             mode, predict_fn = None, None
-            if h == 'keras.src.models.sequential.Sequential' or h == 'sklearn.tree._classes.DecisionTreeClassifier':
+            if h == 'keras.src.models.sequential.Sequential' or h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER':
                 try:
                     mode = "classification" if (len(model.output_shape) > 1 and model.output_shape[-1] > 1) else "regression"
                     predict_fn = lambda x: model.predict(x) if mode == "classification" else lambda x: model.predict(x).flatten()

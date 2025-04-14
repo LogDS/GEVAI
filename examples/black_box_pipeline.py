@@ -35,7 +35,7 @@ if __name__ == '__main__':
     ## Use "MLPNAS_pretrained" if you already run the model over the dataset, so to use the persisted outcome
     ## of the model being trained, ad MLPNAS if you need to train this for the first time
     start_time = time.time()
-    explainer_type = "DecisionTree"  # MLPNAS / MLPNAS_pretrained / GenericAlgorithm
+    explainer_type = "RipperK"  # DecisionTree / MLPNAS / MLPNAS_pretrained / GenericAlgorithm
     ad_hoc = get_ad_hoc_explainer(explainer_type, conf)
     models = list(ad_hoc(*df))
     end_time = time.time()
@@ -47,7 +47,7 @@ if __name__ == '__main__':
         generating_ad_hoc_time = end_time - start_time
 
     ex_post_explainers = ["BlackBoxExplainer", "WhiteBoxExplainer", "LIME", "Shapely"]
-    for model in models[:2]:
+    for model in models[:conf.TARGET_CLASSES]:
         ## TODO. Oliver, not all implemetations of Ad Hoc have a name. If no name attribute is available, you can use explainer_type
         # benchmarking.write_to_file(benchmarking_file_path, f"{loading_config_time},{loading_dataset_time},{explainer_type},{generating_ad_hoc_time},{loading_ad_hoc_time},{model.name},")
         loading_config_time, loading_dataset_time, generating_ad_hoc_time, loading_ad_hoc_time = None, None, None, None
