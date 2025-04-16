@@ -1,5 +1,6 @@
+from GEVAI.benchmarking import write_to_file
 from GEVAI.expost.ExPost import ExPost
-from sklearn.tree import DecisionTreeClassifier, _tree
+from sklearn.tree import _tree
 
 def export_text2(decision_tree, feature_names=None,
                 spacing=3, decimals=5, show_weights=False):
@@ -161,10 +162,9 @@ class WhiteBoxExplainer(ExPost):
         from GEVAI.utils import fullname
         h = fullname(hypothesis)
         if h == 'sklearn.tree._classes.DecisionTreeClassifier':
-            print("TODO: Oliver, please store this information, too!!")
+            write_to_file(f"results/{h}/WhiteBoxExplainer_{h}.json", [export_text2(hypothesis)], 'w')
             return [export_text2(hypothesis)]
         elif h == 'wittgenstein.ripper.RIPPER':
-            print("TODO: Oliver, please store this information, too!!")
             ruleset_str = (
                 str([str(rule) for rule in hypothesis.ruleset_.rules])
                 .replace(" ", "")
@@ -172,7 +172,8 @@ class WhiteBoxExplainer(ExPost):
                 .replace("'", "")
                 .replace("^", " ^ ")
             )
+            write_to_file(f"results/{h}/WhiteBoxExplainer_{h}.txt", [ruleset_str], 'w')
             return [ruleset_str]
         else:
-            print("Unsupported BlackBox explainer")
+            print("Unsupported WhiteBox explainer")
             return []

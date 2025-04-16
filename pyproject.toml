@@ -23,6 +23,8 @@ dtcontrol = "*"
 expecttest = "*"
 lime = "*"
 alibi = "*"
+wittgenstein = "*"
+scikit-learn = "*"
 
 [build-system]
 requires = ["poetry-core"]

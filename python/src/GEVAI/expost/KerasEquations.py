@@ -1,13 +1,16 @@
+from GEVAI.benchmarking import write_to_file
 from GEVAI.expost.ExPost import ExPost
 from GEVAI.utils import fullname
 
-fun_dict = {"sigmoid": lambda x: "(1 / (1 + exp(-("+x+"))))",
-            "softmax": lambda x: "exp("+x+")",##/ sum(exp("+x+"))
-            "softplus": lambda x: "log(exp("+x+") + 1)",
-            "softsign": lambda x: x+" / (abs("+x+") + 1)",
-            "tanh": lambda x: "((exp("+x+") - exp(-("+x+"))) / (exp("+x+") + exp(-("+x+"))))",
-            "relu": lambda x: "max(0,("+x+"))",
-            "elu": lambda x, alpha=1.0: "np.where((" + x + ") > 0, (" + x + "), " + str(alpha) + " * (exp((" + x + ")) - 1))",
+fun_dict = {
+    "sigmoid": lambda x: "(1 / (1 + exp(-(" + x + "))))",
+    "softmax": lambda x: "exp(" + x + ")",  ##/ sum(exp("+x+"))
+    "softplus": lambda x: "log(exp(" + x + ") + 1)",
+    "softsign": lambda x: x + " / (abs(" + x + ") + 1)",
+    "tanh": lambda x: "((exp(" + x + ") - exp(-(" + x + "))) / (exp(" + x + ") + exp(-(" + x + "))))",
+    "relu": lambda x: "max(0,(" + x + "))",
+    "elu": lambda x, alpha=1.0: "np.where((" + x + ") > 0, (" + x + "), " + str(
+        alpha) + " * (exp((" + x + ")) - 1))",
 }
 
 
@@ -55,6 +58,7 @@ class KerasExplainString(ExPost):
                         output_neurons = list(map(lambda x: f"({x})/({joint_sum})", output_neurons))
                     input_values = output_neurons
                     output_neurons = []
+            write_to_file(f"results/{h}/BlackBoxExplainer_{h}.txt", [input_values], 'w')
             return [input_values]
         else:
             print("Unsupported BlackBox explainer")

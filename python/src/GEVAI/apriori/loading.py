@@ -18,21 +18,21 @@ def configuration_loading(file_conf):
 import pandas as pd
 import random
 
-def data_loading(conf):
+def data_loading(conf, explainer_type):
     file, col, shuffle = conf.CSV_TRAINING, conf.CLASS_COLUMN, conf.DATA_SHUFFLE
     data = pd.read_csv(file)
     xd = data.drop(col, axis=1, inplace=False)
     x = data.drop(col, axis=1, inplace=False).values
     y = None
     colN = xd.columns
-    if conf.IS_TARGET_CATEGORICAL:
+    if not explainer_type == 'DecisionTree' and conf.IS_TARGET_CATEGORICAL:
         y = pd.get_dummies(data[col]).values
-    elif conf.IS_TARGET_DATAFRAME:
-        y = pd.DataFrame({col: data.get(col)})
-    elif conf.FORCE_TARGET_NUMERICAL:
+    elif explainer_type == 'DecisionTree' or conf.FORCE_TARGET_NUMERICAL:
         from sklearn import preprocessing
         label_encoder = preprocessing.LabelEncoder()
         y = label_encoder.fit_transform(data[col])
+    elif conf.IS_TARGET_DATAFRAME:
+        y = pd.DataFrame({col: data.get(col)})
     else:
         y = data[col].values
     if shuffle:

@@ -31,9 +31,14 @@ class KerasShapely(ExPost):
                 explainer = shap.KernelExplainer(model, training_x[:howSample])
             elif h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER':
                 explainer = shap.KernelExplainer(model.predict_proba, training_x[:howSample])
+            else:
+                print("Unsupported SHAP explainer")
+                return False
             shap_values = explainer.shap_values(training_x)
-            shap.summary_plot(shap_values, training_x, max_display=self.maxdisplay,
-                              show=False)  # .png,.pdf will also support here
-            plt.savefig(f"shap_summary_{model.name}.svg", dpi=700)
+            shap.summary_plot(shap_values, training_x, max_display=self.maxdisplay, show=False)  # .png,.pdf will also support here
+            plt.savefig(f"results/{h}/shap_summary_{h}.svg", dpi=700)
             plt.show()
+            return True
+        print("Unsupported SHAP explainer")
+        return False
 

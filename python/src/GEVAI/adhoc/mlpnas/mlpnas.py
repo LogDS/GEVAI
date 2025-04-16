@@ -12,21 +12,22 @@ from GEVAI.adhoc.mlpnas.controller import Controller
 from GEVAI.adhoc.mlpnas.mlp_generator import MLPGenerator
 from GEVAI.adhoc.mlpnas.utils import *
 
-fun_dict = {"sigmoid": lambda x: "(1 / (1 + exp(-("+x+"))))",
-            "softmax": lambda x: "exp("+x+")",##/ sum(exp("+x+"))
-            "softplus": lambda x: "log(exp("+x+") + 1)",
-            "softsign": lambda x: x+" / (abs("+x+") + 1)",
-            "tanh": lambda x: "((exp("+x+") - exp(-("+x+"))) / (exp("+x+") + exp(-("+x+"))))",
-            "relu": lambda x: "max(0,("+x+"))"}
+fun_dict = {"sigmoid": lambda x: "(1 / (1 + exp(-(" + x + "))))",
+            "softmax": lambda x: "exp(" + x + ")",  ##/ sum(exp("+x+"))
+            "softplus": lambda x: "log(exp(" + x + ") + 1)",
+            "softsign": lambda x: x + " / (abs(" + x + ") + 1)",
+            "tanh": lambda x: "((exp(" + x + ") - exp(-(" + x + "))) / (exp(" + x + ") + exp(-(" + x + "))))",
+            "relu": lambda x: "max(0,(" + x + "))"}
 
 import sympy
 
 fun_dict_sympy = {"sigmoid": lambda x: 1.0 / (1.0 + sympy.exp(-x)),
                   "relu": lambda x: max(0.0, x),
-            "tanh": lambda x: (sympy.exp(x)-sympy.exp(-x))/(sympy.exp(x)+sympy.exp(-x)),
-                  "softsign": lambda x: x / (sympy.Abs(x)+1),
-            "softplus": lambda x: sympy.log(sympy.exp(x)+1),
+                  "tanh": lambda x: (sympy.exp(x) - sympy.exp(-x)) / (sympy.exp(x) + sympy.exp(-x)),
+                  "softsign": lambda x: x / (sympy.Abs(x) + 1),
+                  "softplus": lambda x: sympy.log(sympy.exp(x) + 1),
                   "softmax": lambda x: sympy.exp(x)}
+
 
 class MyNeuron:
     def __init__(self):
@@ -61,6 +62,7 @@ def explain(hypothesis):
         output_neurons = []
 
     return input_values
+
 
 class MLPNAS(Controller):
     def __init__(self, x, y, conf):
@@ -118,7 +120,7 @@ class MLPNAS(Controller):
             else:
                 self.data.append([sequence,
                                   history.history[self.val_accuracy][0]])
-            print(self.val_accuracy+': ', history.history[self.val_accuracy][0])
+            print(self.val_accuracy + ': ', history.history[self.val_accuracy][0])
         else:
             val_acc = np.ma.average(history.history[self.val_accuracy],
                                     weights=np.arange(1, len(history.history[self.val_accuracy]) + 1),
@@ -130,7 +132,7 @@ class MLPNAS(Controller):
             else:
                 self.data.append([sequence,
                                   val_acc])
-            print(self.val_accuracy+': ', val_acc)
+            print(self.val_accuracy + ': ', val_acc)
 
     def prepare_controller_data(self, sequences):
         controller_sequences = pad_sequences(sequences, maxlen=self.max_len, padding='post')
@@ -145,7 +147,7 @@ class MLPNAS(Controller):
             running_add = 0.
             exp = 0.
             for r in rewards[t:]:
-                running_add += self.controller_loss_alpha**exp * r
+                running_add += self.controller_loss_alpha ** exp * r
                 exp += 1
             discounted_r[t] = running_add
         discounted_r = (discounted_r - discounted_r.mean()) / discounted_r.std()
@@ -200,11 +202,11 @@ class MLPNAS(Controller):
             # Setting up the weights associated to the neural networks
             self.model_generator.set_model_weights(model)
 
-    def explain_search_result(self, colnames, howMuchSample=.3,nsamples=500):
+    def explain_search_result(self, colnames, howMuchSample=.3, nsamples=500):
         torch.set_grad_enabled(True)
-        nsamples = max(nsamples, len(colnames)+10)
+        nsamples = max(nsamples, len(colnames) + 10)
         # Retrieving the sequence information from the dump
-        print("Feature Names: "+str(colnames))
+        print("Feature Names: " + str(colnames))
         self.sequences = list(map(lambda x: x[0], self.data))
         for i, sequence in enumerate(self.sequences):
             print('Architecture: ', self.decode_sequence(sequence))
@@ -217,8 +219,7 @@ class MLPNAS(Controller):
             howSample = min(math.ceil(howMuchSample * len(self.x)), len(self.x))
             explainer = shap.DeepExplainer(model, self.x[:howSample])
             shap_values = explainer.shap_values(self.x)
-            shap.summary_plot(shap_values, self.x, max_display=10) # .png,.pdf will also support here
-
+            shap.summary_plot(shap_values, self.x, max_display=10)  # .png,.pdf will also support here
 
     def make_testing_predictions(self, x, y):
         # Retrieving the sequence information from the dump
@@ -231,7 +232,7 @@ class MLPNAS(Controller):
             model = self.create_architecture(sequence)
             # Setting up the weights associated to the neural networks
             self.model_generator.set_model_weights(model)
-            for_current_model.append(list(zip(model.predict(x),y)))
+            for_current_model.append(list(zip(model.predict(x), y)))
             models_result.append(for_current_model)
         return models_result
 
@@ -240,7 +241,8 @@ class MLPNAS(Controller):
             print('------------------------------------------------------------------')
             print('                       CONTROLLER EPOCH: {}'.format(controller_epoch))
             print('------------------------------------------------------------------')
-            self.sequences = self.sample_architecture_sequences(self.controller_model, self.samples_per_controller_epoch)
+            self.sequences = self.sample_architecture_sequences(self.controller_model,
+                                                                self.samples_per_controller_epoch)
             if self.use_predictor:
                 pred_accuracies = self.get_predicted_accuracies_hybrid_model(self.controller_model, self.sequences)
             for i, sequence in enumerate(self.sequences):
@@ -253,10 +255,12 @@ class MLPNAS(Controller):
                     self.append_model_metrics(sequence, history)
                 print('------------------------------------------------------')
             xc, yc, val_acc_target = self.prepare_controller_data(self.sequences)
-            self.train_controller(self.controller_model,
-                                  xc,
-                                  yc,
-                                  val_acc_target[-self.samples_per_controller_epoch:])
+            self.train_controller(
+                self.controller_model,
+                xc,
+                yc,
+                val_acc_target[-self.samples_per_controller_epoch:]
+            )
         with open(self.nas_data_log, 'wb') as f:
             pickle.dump(self.data, f)
         log_event()

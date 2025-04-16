@@ -1,4 +1,3 @@
-
 class ExPost:
     def acceptingType(self):
         pass

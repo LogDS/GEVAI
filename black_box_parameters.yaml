@@ -26,7 +26,7 @@ MLP_LEARNING_RATE: 0.01
 MLP_DECAY: 0.0
 MLP_MOMENTUM: 0.0
 MLP_DROPOUT: 0.2
-MLP_LOSS_FUNCTION: 'categorical_crossentropy' #kl_divergence, categorical_crossentropy (https://www.tensorflow.org/api_docs/python/tf/keras/metrics/kl_divergence)
+MLP_LOSS_FUNCTION: 'sparse_categorical_crossentropy' #kl_divergence, categorical_crossentropy (https://www.tensorflow.org/api_docs/python/tf/keras/metrics/kl_divergence)
 MLP_ONE_SHOT: True
 nodes: [8, 16, 32, 64, 128, 256, 512]
 activation_functions: ['sigmoid', 'tanh', 'relu', 'elu']
@@ -40,7 +40,7 @@ DT_CRITERION: ['gini', 'entropy']
 FOLD_CROSS_VALIDATION: 5
 
 ########################################################
-#                RipperK PARAMETERS              #
+#                RipperK PARAMETERS                    #
 ########################################################
 RK_Random: [0,1,2]
 RK_K:      [2,3,4]
@@ -52,14 +52,16 @@ RK_N_DISCRETIZE_BINS: [5, 10, 15]
 ########################################################
 #                   DATA PARAMETERS                    #
 ########################################################
+RUN_ALL_EXPLAINERS: true
+RUN_ALL_EX_POST: true
 TARGET_CLASSES: 3
-IS_TARGET_CATEGORICAL: no
-FORCE_TARGET_NUMERICAL: yes # YES for DecisionTree, no otherwise
-IS_TARGET_DATAFRAME: no # YES for RRULES, no otherwise
+IS_TARGET_CATEGORICAL: false
+FORCE_TARGET_NUMERICAL: true # YES for DecisionTree, no otherwise
+IS_TARGET_DATAFRAME: false # YES for RRULES, no otherwise
 DATA_SHUFFLE: false
 CLASS_COLUMN: "quality_label"
-CSV_TRAINING: "/home/giacomo/PyCharmProjects/GEVAI/DATASETS/wine-quality.csv"
-CSV_TESTING: "/home/giacomo/PyCharmProjects/GEVAI/DATASETS/wine-quality.csv"
+CSV_TRAINING: "/home/campus.ncl.ac.uk/b9063849/PycharmProjects/GEVAI/datasets/wine-quality.csv"
+CSV_TESTING: "/home/campus.ncl.ac.uk/b9063849/PycharmProjects/GEVAI/datasets/wine-quality.csv"
 
 
 

@@ -95,6 +95,15 @@ class MLPGenerator(MLPSearchSpace):
         self.mlp_one_shot = conf.MLP_ONE_SHOT
         self.metrics = []
         for x in conf.METRICS:
+            # if x == "precision":
+            #     self.metrics.append(keras.src.metrics.Precision())
+            # elif x == "recall":
+            #     self.metrics.append(keras.src.metrics.Recall())
+            # elif x == "f1score":
+            #     self.metrics.append(keras.src.metrics.F1Score())
+            # else:
+            #     self.metrics.append(x)
+
             if x == "precision":
                 self.metrics.append(precision)
             elif x == "recall":
@@ -165,9 +174,13 @@ class MLPGenerator(MLPSearchSpace):
                     if config_ids[j] == bigram_ids[i]:
                         search_index.append(i)
                 if len(search_index) == 0:
-                    self.shared_weights = self.shared_weights._append({'bigram_id': config_ids[j],
-                                                                      'weights': layer.get_weights()},
-                                                                     ignore_index=True)
+                    self.shared_weights = self.shared_weights._append(
+                        {
+                            'bigram_id': config_ids[j],
+                            'weights': layer.get_weights()
+                        },
+                        ignore_index=True
+                    )
                 else:
                     self.shared_weights.at[search_index[0], 'weights'] = layer.get_weights()
                 j += 1
@@ -200,18 +213,22 @@ class MLPGenerator(MLPSearchSpace):
     def train_model(self, model, x_data, y_data, nb_epochs, validation_split=0.1, callbacks=None):
         if self.mlp_one_shot:
             self.set_model_weights(model)
-            history = model.fit(x_data,
-                                y_data,
-                                epochs=nb_epochs,
-                                validation_split=validation_split,
-                                callbacks=callbacks,
-                                verbose=0)
+            history = model.fit(
+                x_data,
+                y_data,
+                epochs=nb_epochs,
+                validation_split=validation_split,
+                callbacks=callbacks,
+                verbose=0
+            )
             self.update_weights(model)  # Serialises the weights to the file
         else:
-            history = model.fit(x_data,
-                                y_data,
-                                epochs=nb_epochs,
-                                validation_split=validation_split,
-                                callbacks=callbacks,
-                                verbose=0)
+            history = model.fit(
+                x_data,
+                y_data,
+                epochs=nb_epochs,
+                validation_split=validation_split,
+                callbacks=callbacks,
+                verbose=0
+            )
         return history

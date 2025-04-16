@@ -1,8 +1,9 @@
 import math
+import os
+
 import lime
 import lime.lime_tabular
 import matplotlib.pyplot as plt
-
 
 from GEVAI.expost.ExPost import ExPost
 
@@ -34,10 +35,24 @@ class KerasLime(ExPost):
             from GEVAI.utils import fullname
             h = fullname(model)
             mode, predict_fn = None, None
-            if h == 'keras.src.models.sequential.Sequential' or h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER':
+            if h in {
+                'keras.src.models.sequential.Sequential',
+                'sklearn.tree._classes.DecisionTreeClassifier',
+                'wittgenstein.ripper.RIPPER'
+            }:
                 try:
-                    mode = "classification" if (len(model.output_shape) > 1 and model.output_shape[-1] > 1) else "regression"
-                    predict_fn = lambda x: model.predict(x) if mode == "classification" else lambda x: model.predict(x).flatten()
+                    mode = "classification" \
+                        if (((hasattr(model, "output_shape") and len(model.output_shape) > 1 and model.output_shape[
+                        -1] > 1)
+                             or h == 'sklearn.tree._classes.DecisionTreeClassifier')
+                            or h == 'wittgenstein.ripper.RIPPER') \
+                        else "regression"
+                    if h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER':
+                        predict_fn = lambda x: model.predict_proba(x) \
+                            if mode == "classification" else lambda x: model.predict_proba(x).flatten()
+                    else:
+                        predict_fn = lambda x: model.predict(x) if mode == "classification" else lambda \
+                            x: model.predict(x).flatten()
                 except Exception as e:
                     print(f"Error during LIME explanation: {e}")
 
@@ -62,7 +77,15 @@ class KerasLime(ExPost):
                     plt.figure()
                     explanation.as_pyplot_figure()
                     plt.tight_layout()
-                    plt.savefig(f"lime_explanation_{model.name}_{i}.png")
+
+                    if not os.path.exists(f'results/{h}/LIME'):
+                        os.makedirs(f'results/{h}/LIME')
+
+                    plt.savefig(f"results/{h}/LIME/lime_explanation_{h}_{i}.png")
                     plt.show()
+
+                return True
             else:
                 print("Unsupported LIME explainer")
+                return False
+        return False
