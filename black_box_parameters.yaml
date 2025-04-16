@@ -42,10 +42,10 @@ FOLD_CROSS_VALIDATION: 5
 ########################################################
 #                RipperK PARAMETERS                    #
 ########################################################
-RK_Random: [0,1,2]
-RK_K:      [2,3,4]
+RK_Random: [0, 1, 2]
+RK_K:      [1, 2, 3, 4]
 RK_PRUNE:  [0.25, 0.33, 0.5]
-RK_DL_ALLOWANCE: [64]
+RK_DL_ALLOWANCE: [16, 32, 64]
 RK_N_DISCRETIZE_BINS: [5, 10, 15]
 
 

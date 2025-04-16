@@ -58,7 +58,7 @@ class KerasExplainString(ExPost):
                         output_neurons = list(map(lambda x: f"({x})/({joint_sum})", output_neurons))
                     input_values = output_neurons
                     output_neurons = []
-            write_to_file(f"results/{h}/BlackBoxExplainer_{h}.txt", [input_values], 'w')
+            write_to_file(f"{kwargs['results_path']}/BlackBoxExplainer_{h}.txt", [input_values], 'w')
             return [input_values]
         else:
             print("Unsupported BlackBox explainer")

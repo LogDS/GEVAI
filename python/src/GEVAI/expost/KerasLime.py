@@ -81,7 +81,7 @@ class KerasLime(ExPost):
                     if not os.path.exists(f'results/{h}/LIME'):
                         os.makedirs(f'results/{h}/LIME')
 
-                    plt.savefig(f"results/{h}/LIME/lime_explanation_{h}_{i}.png")
+                    plt.savefig(f"{kwargs['results_path']}/LIME/lime_explanation_{h}_{i}.png")
                     plt.show()
 
                 return True

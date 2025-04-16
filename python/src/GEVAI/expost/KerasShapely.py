@@ -36,7 +36,7 @@ class KerasShapely(ExPost):
                 return False
             shap_values = explainer.shap_values(training_x)
             shap.summary_plot(shap_values, training_x, max_display=self.maxdisplay, show=False)  # .png,.pdf will also support here
-            plt.savefig(f"results/{h}/shap_summary_{h}.svg", dpi=700)
+            plt.savefig(f"{kwargs['results_path']}/shap_summary_{h}.svg", dpi=700)
             plt.show()
             return True
         print("Unsupported SHAP explainer")

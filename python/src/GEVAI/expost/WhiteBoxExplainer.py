@@ -162,7 +162,7 @@ class WhiteBoxExplainer(ExPost):
         from GEVAI.utils import fullname
         h = fullname(hypothesis)
         if h == 'sklearn.tree._classes.DecisionTreeClassifier':
-            write_to_file(f"results/{h}/WhiteBoxExplainer_{h}.json", [export_text2(hypothesis)], 'w')
+            write_to_file(f"{kwargs['results_path']}/WhiteBoxExplainer_{h}.json", [export_text2(hypothesis)], 'w')
             return [export_text2(hypothesis)]
         elif h == 'wittgenstein.ripper.RIPPER':
             ruleset_str = (
@@ -172,7 +172,7 @@ class WhiteBoxExplainer(ExPost):
                 .replace("'", "")
                 .replace("^", " ^ ")
             )
-            write_to_file(f"results/{h}/WhiteBoxExplainer_{h}.txt", [ruleset_str], 'w')
+            write_to_file(f"{kwargs['results_path']}/WhiteBoxExplainer_{h}.txt", [ruleset_str], 'w')
             return [ruleset_str]
         else:
             print("Unsupported WhiteBox explainer")

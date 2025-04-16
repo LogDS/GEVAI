@@ -63,7 +63,7 @@ class Metrics(ExPost):
                     'recall': recall,
                     'f1_score': f1,
                 }
-                write_to_file(f"results/{h}/metrics_{h}.json", json.dumps(metrics), 'w')
+                write_to_file(f"{kwargs['results_path']}/metrics_{h}.json", json.dumps(metrics), 'w')
                 return metrics
             # For multi-class classification:
             else:
@@ -102,7 +102,7 @@ class Metrics(ExPost):
                     'recall': [recall_micro, recall_macro, recall_weighted],
                     'f1_score': [f1_micro, f1_macro, f1_weighted],
                 }
-                write_to_file(f"results/{h}/metrics_{h}.json", json.dumps(metrics), 'w')
+                write_to_file(f"{kwargs['results_path']}/metrics_{h}.json", json.dumps(metrics), 'w')
                 return metrics
         else:
             return False

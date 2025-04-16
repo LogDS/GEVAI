@@ -18,11 +18,12 @@ class RunExperiment:
         ]
         self.benchmarking_file_path = os.path.join(
             f"results/benchmark_{len(self.ex_post_explainers)}ex_post_explainers.csv")
+        self.results_path = None
         self.df = None
 
-    def get_explanation_and_explainer(self, ex_post_expl, config, model):
-        explainer = get_ex_post_explainer(ex_post_expl, config)
-        explanation = explainer(model, training_x=self.df[0], training_y=self.df[1])
+    def get_explanation_and_explainer(self, ex_post_expl, model):
+        explainer = get_ex_post_explainer(ex_post_expl, self.conf)
+        explanation = explainer(model, training_x=self.df[0], training_y=self.df[1], results_path=self.results_path)
         return explainer, explanation
 
     def run_ad_hoc(self, explainer_type):
@@ -35,16 +36,18 @@ class RunExperiment:
         return models
 
     def run_ex_post(self, models, explainer_type):
-        for model in models[:self.conf.TARGET_CLASSES]:
-            from GEVAI.utils import fullname
-            result_path = f'results/{fullname(model)}'
-            if not os.path.exists(result_path):
-                os.makedirs(result_path)
+        for idx, model in enumerate(models[:self.conf.TARGET_CLASSES]):
+            model_name = f"{model.name if hasattr(model, 'name') else explainer_type}"
 
-            write_to_file(self.benchmarking_file_path,
-                          f"{model.name if hasattr(model, 'name') else explainer_type},'{str(model)}',"
-                          if model == models[
-                              0] else f"{None},{None},{explainer_type},{None},{model.name if hasattr(model, 'name') else explainer_type},'{str(model)}',")
+            self.results_path = f'results/{model_name}_{idx}'
+            if not os.path.exists(self.results_path):
+                os.makedirs(self.results_path)
+
+            write_to_file(
+                self.benchmarking_file_path,
+                f"{model_name},'{str(model)}',"
+                if model == models[0] else f"{None},{None},{explainer_type},{None},{model_name},'{str(model)}',"
+            )
 
             if not self.conf.RUN_ALL_EX_POST:
                 self.ex_post_explainers = ["Shapely"]
@@ -53,7 +56,6 @@ class RunExperiment:
                 ex_post_time, (ex_post, explanation) = time_function(
                     self.get_explanation_and_explainer,
                     ex_post_explainer,
-                    self.conf,
                     model
                 )
 
@@ -80,7 +82,7 @@ class RunExperiment:
         # Config determines whether to loop over every ad hoc explainer
         # Add "_pretrained" at end of type to avoid re-training
         if not self.conf.RUN_ALL_EXPLAINERS:
-            self.explainer_types = ["MLPNAS"]
+            self.explainer_types = ["RipperK"]
 
         for explainer_type in self.explainer_types:
             # Loading the dataset
