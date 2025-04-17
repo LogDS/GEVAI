@@ -78,8 +78,8 @@ class KerasLime(ExPost):
                     explanation.as_pyplot_figure()
                     plt.tight_layout()
 
-                    if not os.path.exists(f'results/{h}/LIME'):
-                        os.makedirs(f'results/{h}/LIME')
+                    if not os.path.exists(f"{kwargs['results_path']}/LIME"):
+                        os.makedirs(f"{kwargs['results_path']}/LIME")
 
                     plt.savefig(f"{kwargs['results_path']}/LIME/lime_explanation_{h}_{i}.png")
                     plt.show()
