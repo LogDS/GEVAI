@@ -7,7 +7,8 @@ from GEVAI.benchmarking import write_to_file, init_file, time_function
 
 class RunExperiment:
     def __init__(self):
-        self.conf = "black_box_parameters.yaml"
+        self.conf = None
+        self.conf_dir = "black_box_parameters.yaml"
         self.explainer_types = [
             # Use "_pretrained" to avoid retraining
             "MLPNAS", "DecisionTree", "RipperK"
@@ -38,6 +39,7 @@ class RunExperiment:
     def run_ex_post(self, models, explainer_type):
         for idx, model in enumerate(models[:self.conf.TARGET_CLASSES]):
             model_name = f"{model.name if hasattr(model, 'name') else explainer_type}"
+            hypothesis = f"{str(model).replace(',',';')}"
 
             self.results_path = f'results/{model_name}_{idx}'
             if not os.path.exists(self.results_path):
@@ -45,8 +47,8 @@ class RunExperiment:
 
             write_to_file(
                 self.benchmarking_file_path,
-                f"{model_name},'{str(model)}',"
-                if model == models[0] else f"{None},{None},{explainer_type},{None},{model_name},'{str(model)}',"
+                f'{model_name},{hypothesis},'
+                if model == models[0] else f'{None},{None},{explainer_type},{None},{model_name},{hypothesis},'
             )
 
             if not self.conf.RUN_ALL_EX_POST:
@@ -72,19 +74,22 @@ class RunExperiment:
     def start_experiment(self):
         os.chdir('../')
         init_file(self.benchmarking_file_path, self.ex_post_explainers)
+        should_reload_config = True
 
-        # Loading the configuration for the entire architecture
-        start_time = time.time()
-        self.conf = get_a_priori_explainer("Configuration", self.conf)
-        end_time = time.time()
-        loading_config_time = end_time - start_time
+        for idx, explainer_type in enumerate(self.explainer_types):
+            if should_reload_config or idx == 0:
+                self.conf = None
+                # Loading the configuration for the entire architecture
+                start_time = time.time()
+                self.conf = get_a_priori_explainer("Configuration", self.conf_dir)
+                end_time = time.time()
+                loading_config_time = end_time - start_time
 
-        # Config determines whether to loop over every ad hoc explainer
-        # Add "_pretrained" at end of type to avoid re-training
-        if not self.conf.RUN_ALL_EXPLAINERS:
-            self.explainer_types = ["RipperK"]
+            # Config determines whether to loop over every ad hoc explainer
+            # Add "_pretrained" at end of type to avoid re-training
+            if not self.conf.RUN_ALL_EXPLAINERS:
+                self.explainer_types = ["MLPNAS"]
 
-        for explainer_type in self.explainer_types:
             # Loading the dataset
             # TODO: use the actual representation hierarchy
             start_time = time.time()

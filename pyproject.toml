@@ -25,6 +25,7 @@ lime = "*"
 alibi = "*"
 wittgenstein = "*"
 scikit-learn = "*"
+plotnine = "*"
 
 [build-system]
 requires = ["poetry-core"]
