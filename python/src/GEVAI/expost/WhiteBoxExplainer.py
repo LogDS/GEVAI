@@ -1,6 +1,10 @@
+from matplotlib import pyplot as plt
+from sklearn import tree
+from sklearn.tree import _tree
+
 from GEVAI.benchmarking import write_to_file
 from GEVAI.expost.ExPost import ExPost
-from sklearn.tree import _tree
+
 
 def export_text2(decision_tree, feature_names=None,
                 spacing=3, decimals=5, show_weights=False):
@@ -156,13 +160,24 @@ class WhiteBoxExplainer(ExPost):
         Given a keras sequential model as an input, this function
         expresses the neural network as a list of equations
         """
+        training_x = kwargs['training_x']
+        training_y = kwargs.get('training_y', None)
+        feature_names = kwargs.get('feature_names', [f'feature_{i}' for i in range(training_x.shape[1])])
+        class_names = kwargs.get('class_names', None)
         hypothesis = args[0]
+
         ## TODO: do something depending on the type!
         input_values = None
         from GEVAI.utils import fullname
         h = fullname(hypothesis)
         file_path = f"{kwargs['results_path']}/WhiteBoxExplainer_{h}.txt"
         if h == 'sklearn.tree._classes.DecisionTreeClassifier':
+            fig = plt.figure(figsize=(25, 20))
+            _ = tree.plot_tree(hypothesis,
+                               feature_names=feature_names,
+                               class_names=class_names,
+                               filled=True)
+            fig.savefig(f"{kwargs['results_path']}/DecisionTree_{h}.png")
             write_to_file(file_path, [export_text2(hypothesis)], 'w')
             return [export_text2(hypothesis)]
         elif h == 'wittgenstein.ripper.RIPPER' or h == 'GEVAI.adhoc.RipperKWrapper.RipperKWrapper':

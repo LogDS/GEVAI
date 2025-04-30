@@ -54,7 +54,7 @@ RK_N_DISCRETIZE_BINS: [5, 10, 15]
 ########################################################
 RUN_ALL_EXPLAINERS: true
 RUN_ALL_EX_POST: true
-TARGET_CLASSES: 10
+TARGET_CLASSES: 5
 IS_TARGET_CATEGORICAL: false
 FORCE_TARGET_NUMERICAL: true # YES for DecisionTree, no otherwise
 IS_TARGET_DATAFRAME: false # YES for RRULES, no otherwise

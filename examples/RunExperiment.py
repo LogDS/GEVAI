@@ -11,11 +11,11 @@ class RunExperiment:
         self.conf_dir = "black_box_parameters.yaml"
         self.explainer_types = [
             # Use "_pretrained" to avoid retraining
-            "MLPNAS", "DecisionTree", "RipperK"
+            "DecisionTree_pretrained"
             # "GenericAlgorithm"
         ]
         self.ex_post_explainers = [
-            "Metrics", "BlackBoxExplainer", "WhiteBoxExplainer", "LIME", "SHAP"
+            "WhiteBoxExplainer"
         ]
         self.benchmarking_file_path = os.path.join(
             f"results/benchmark_{len(self.ex_post_explainers)}ex_post_explainers.csv")
