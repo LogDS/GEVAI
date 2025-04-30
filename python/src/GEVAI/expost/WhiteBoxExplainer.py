@@ -161,18 +161,22 @@ class WhiteBoxExplainer(ExPost):
         input_values = None
         from GEVAI.utils import fullname
         h = fullname(hypothesis)
+        file_path = f"{kwargs['results_path']}/WhiteBoxExplainer_{h}.txt"
         if h == 'sklearn.tree._classes.DecisionTreeClassifier':
-            write_to_file(f"{kwargs['results_path']}/WhiteBoxExplainer_{h}.json", [export_text2(hypothesis)], 'w')
+            write_to_file(file_path, [export_text2(hypothesis)], 'w')
             return [export_text2(hypothesis)]
-        elif h == 'wittgenstein.ripper.RIPPER':
-            ruleset_str = (
-                str([str(rule) for rule in hypothesis.ruleset_.rules])
-                .replace(" ", "")
-                .replace(",", " V\n")
-                .replace("'", "")
-                .replace("^", " ^ ")
-            )
-            write_to_file(f"{kwargs['results_path']}/WhiteBoxExplainer_{h}.txt", [ruleset_str], 'w')
+        elif h == 'wittgenstein.ripper.RIPPER' or h == 'GEVAI.adhoc.RipperKWrapper.RipperKWrapper':
+            ruleset_str = ""
+            models = hypothesis.models if hasattr(hypothesis, "models") else [hypothesis]
+            for m in models:
+                ruleset_str += (
+                    str([str(rule) for rule in m.ruleset_.rules])
+                    .replace(" ", "")
+                    .replace(",", " V\n")
+                    .replace("'", "")
+                    .replace("^", " ^ ")
+                )
+            write_to_file(file_path, [ruleset_str], 'w')
             return [ruleset_str]
         else:
             print("Unsupported WhiteBox explainer")

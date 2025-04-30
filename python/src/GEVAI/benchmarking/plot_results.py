@@ -1,15 +1,16 @@
 import matplotlib.font_manager as fm
 import numpy as np
 import pandas as pd
-from plotnine import ggplot, aes, scale_y_log10, labs, geom_point, element_text, element_blank, theme, scale_color_brewer, element_rect, \
-    theme_light
+from plotnine import ggplot, aes, scale_y_log10, labs, geom_point, element_text, element_blank, theme, \
+    scale_color_brewer, element_rect, \
+    theme_light, facet_wrap, guides, guide_legend
 
 if __name__ == '__main__':
     font_regular = fm.FontProperties(fname='./fonts/Satoshi-Medium.ttf', size=11)
     font_bold = fm.FontProperties(fname='./fonts/Satoshi-Bold.ttf', size=11)
     font_title = fm.FontProperties(fname='./fonts/Satoshi-Bold.ttf', size=13)
 
-    csv_name = "../../../../results/benchmark_5ex_post_explainers-FIRST.csv"
+    csv_name = "../../../../results/apr29/benchmark_5ex_post_explainers.csv" # "apr29/benchmark_5ex_post_explainers.csv"
     cols = list(pd.read_csv(csv_name, nrows=1))
     excluded_columns = ["Hypothesis", "Ad hoc model", "Load configuration", "Load dataset"]
     data = pd.read_csv(csv_name, quotechar="'", usecols=[i for i in cols if i not in excluded_columns])
@@ -41,7 +42,6 @@ if __name__ == '__main__':
                 mapping=aes(x=ad_hoc_types_column, y='mean_seconds', shape='phase'),
                 size=4
             )
-            # + facet_wrap('~phase', scales='free_x')  # Create a separate plot for each 'phase'
             + scale_y_log10(minor_breaks=[],
                             breaks=[10 ** x for x in range(-5, 7)],
                             labels=lambda l: ["{:.0e}".format(v).replace("+0", "+").replace("-0", "-") for v
@@ -66,6 +66,10 @@ if __name__ == '__main__':
                     legend_position='bottom',
                 )
         + scale_color_brewer(type='qual', palette='Dark2')
+        + guides(color=guide_legend(nrow=2), shape=guide_legend(nrow=2))
     )
 
-    plot.save("ex_post_comparison.png", dpi=1200, width=7.5, height=5)
+    plot.save("ex_post_comparison.png", dpi=1200, width=8.5, height=5)
+
+    plot += facet_wrap('~phase', scales='free_x')  # Create a separate plot for each 'phase'
+    plot.save("ex_post_comparison_facet.png", dpi=1200, width=8.5, height=5)

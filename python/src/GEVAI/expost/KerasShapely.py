@@ -29,8 +29,8 @@ class KerasShapely(ExPost):
             if h == 'keras.src.models.sequential.Sequential':
                 # shap.explainers._deep.deep_tf.op_handlers["AddV2"] = shap.explainers._deep.deep_tf.passthrough
                 explainer = shap.KernelExplainer(model, training_x[:howSample])
-            elif h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER':
-                explainer = shap.KernelExplainer(model.predict_proba, training_x[:howSample])
+            elif h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER' or h == 'GEVAI.adhoc.RipperKWrapper.RipperKWrapper':
+                explainer = shap.KernelExplainer(model.predict, training_x[:howSample])
             else:
                 print("Unsupported SHAP explainer")
                 return False

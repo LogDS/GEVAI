@@ -5,7 +5,7 @@ def get_ex_post_explainer(explainer_type, conf):
     if explainer_type == "WhiteBoxExplainer":
         from GEVAI.expost.WhiteBoxExplainer import WhiteBoxExplainer
         return WhiteBoxExplainer(conf)
-    elif explainer_type == "Shapely":
+    elif explainer_type == "SHAP":
         from GEVAI.expost.KerasShapely import KerasShapely
         return KerasShapely(conf)
     elif explainer_type == "LIME":

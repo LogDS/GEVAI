@@ -28,10 +28,13 @@ class KerasExplainString(ExPost):
         Given a keras sequential model as an input, this function
         expresses the neural network as a list of equations
         """
+
         hypothesis = args[0]
         ## TODO: do something depending on the type!
         input_values = None
         h = fullname(hypothesis)
+        result_file_path = f"{kwargs['results_path']}/BlackBoxExplainer_{h}.txt"
+
         if h == 'keras.src.models.sequential.Sequential':
             for layerNum, layer in enumerate(hypothesis.layers):
                 W = layer.get_weights()
@@ -58,8 +61,8 @@ class KerasExplainString(ExPost):
                         output_neurons = list(map(lambda x: f"({x})/({joint_sum})", output_neurons))
                     input_values = output_neurons
                     output_neurons = []
-            write_to_file(f"{kwargs['results_path']}/BlackBoxExplainer_{h}.txt", [input_values], 'w')
-            return [input_values]
+            write_to_file(result_file_path, input_values, 'w')
+            return input_values
         else:
             print("Unsupported BlackBox explainer")
             return []

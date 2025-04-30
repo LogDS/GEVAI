@@ -26,10 +26,10 @@ class Metrics(ExPost):
 
             train_x, test_x, train_y, test_y = train_test_split(training_x, training_y, test_size=0.2, random_state=42)
 
-            if hasattr(model, "predict_proba"):
-                predictions = model.predict_proba(test_x)
-            else:
-                predictions = model.predict(test_x)
+            # if hasattr(model, "predict_proba"):
+            #     predictions = model.predict_proba(test_x)
+            # else:
+            predictions = model.predict(test_x)
 
             # For binary classification with sigmoid activation (output probabilities between 0 and 1):
             if len(predictions.shape) > 1 and predictions.shape[1] == 1:
@@ -69,14 +69,6 @@ class Metrics(ExPost):
             else:
                 print("--- Multi-class Classification Metrics ---")
 
-                # Micro-average (global calculation of TP, FP, FN)
-                precision_micro = precision_score(true_labels, predicted_classes, average='micro')
-                recall_micro = recall_score(true_labels, predicted_classes, average='micro')
-                f1_micro = f1_score(true_labels, predicted_classes, average='micro')
-                print(f"Micro-average Precision: {precision_micro:.4f}")
-                print(f"Micro-average Recall: {recall_micro:.4f}")
-                print(f"Micro-average F1 Score: {f1_micro:.4f}")
-
                 # Macro-average (average of per-class metrics)
                 precision_macro = precision_score(true_labels, predicted_classes, average='macro')
                 recall_macro = recall_score(true_labels, predicted_classes, average='macro')
@@ -98,9 +90,18 @@ class Metrics(ExPost):
 
                 metrics = {
                     'accuracy': accuracy,
-                    'precision': [precision_micro, precision_macro, precision_weighted],
-                    'recall': [recall_micro, recall_macro, recall_weighted],
-                    'f1_score': [f1_micro, f1_macro, f1_weighted],
+                    'precision': {
+                        'macro': precision_macro,
+                        'weighted': precision_weighted
+                    },
+                    'recall': {
+                        'macro': recall_macro,
+                        'weighted': recall_weighted
+                    },
+                    'f1_score': {
+                        'macro': f1_macro,
+                        'weighted': f1_weighted
+                    },
                 }
                 write_to_file(f"{kwargs['results_path']}/metrics_{h}.json", json.dumps(metrics), 'w')
                 return metrics

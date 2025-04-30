@@ -5,7 +5,13 @@ import time
 def write_to_file(file_path, text, write_mode='a'):
     try:
         with open(file_path, write_mode) as file:
-            file.write(str(text))
+            # Could potentially be too large to convert list to str all at once (due to memory limitations)
+            #  Therefore, iterate and append to file per row in array
+            if isinstance(text, list):
+                for t in text:
+                    file.write(str(t))
+            else:
+                file.write(str(text))
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -35,7 +41,7 @@ def create_benchmark_file(ex_post_explainers, new_file, write_mode='a'):
     formatted_explainers = [f"Ex post ({explainer})" for explainer in ex_post_explainers]
     write_to_file(
         new_file,
-        f"Load configuration,Load dataset,Ad hoc type,Get all ad hoc explainers,Ad hoc model,Hypothesis,{','.join(formatted_explainers)}\n",
+        f"Load configuration,Load dataset,Ad hoc type,Generating model,Ad hoc model,Hypothesis,{','.join(formatted_explainers)}\n",
         write_mode
     )
 

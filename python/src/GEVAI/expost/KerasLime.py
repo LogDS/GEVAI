@@ -38,16 +38,17 @@ class KerasLime(ExPost):
             if h in {
                 'keras.src.models.sequential.Sequential',
                 'sklearn.tree._classes.DecisionTreeClassifier',
-                'wittgenstein.ripper.RIPPER'
+                'wittgenstein.ripper.RIPPER',
+                'GEVAI.adhoc.RipperKWrapper.RipperKWrapper'
             }:
                 try:
-                    mode = "classification" \
-                        if (((hasattr(model, "output_shape") and len(model.output_shape) > 1 and model.output_shape[
-                        -1] > 1)
-                             or h == 'sklearn.tree._classes.DecisionTreeClassifier')
-                            or h == 'wittgenstein.ripper.RIPPER') \
-                        else "regression"
-                    if h == 'sklearn.tree._classes.DecisionTreeClassifier' or h == 'wittgenstein.ripper.RIPPER':
+                    mode = "classification"
+                        # if (((hasattr(model, "output_shape") and len(model.output_shape) > 1 and model.output_shape[
+                        # -1] > 1)
+                        #      or h == 'sklearn.tree._classes.DecisionTreeClassifier')
+                        #     or h == 'wittgenstein.ripper.RIPPER' or h == '') \
+                        # else "regression"
+                    if h in {'sklearn.tree._classes.DecisionTreeClassifier', 'wittgenstein.ripper.RIPPER', 'GEVAI.adhoc.RipperKWrapper.RipperKWrapper'}:
                         predict_fn = lambda x: model.predict_proba(x) \
                             if mode == "classification" else lambda x: model.predict_proba(x).flatten()
                     else:
@@ -55,7 +56,6 @@ class KerasLime(ExPost):
                             x: model.predict(x).flatten()
                 except Exception as e:
                     print(f"Error during LIME explanation: {e}")
-
             if mode is not None and predict_fn is not None:
                 explainer = lime.lime_tabular.LimeTabularExplainer(
                     training_data=sample_x,
@@ -67,25 +67,33 @@ class KerasLime(ExPost):
                 num_explanations = min(self.maxdisplay, len(sample_x))
                 print(f"Generating LIME explanations for {num_explanations} samples...")
 
-                for i in range(num_explanations):
-                    explanation = explainer.explain_instance(
-                        data_row=sample_x[i],
-                        predict_fn=predict_fn,
-                        num_features=self.maxdisplay,
-                    )
-                    print(f"\n--- Explanation for instance {i} ---")
-                    plt.figure()
-                    explanation.as_pyplot_figure()
-                    plt.tight_layout()
-
-                    if not os.path.exists(f"{kwargs['results_path']}/LIME"):
-                        os.makedirs(f"{kwargs['results_path']}/LIME")
-
-                    plt.savefig(f"{kwargs['results_path']}/LIME/lime_explanation_{h}_{i}.png")
-                    plt.show()
+                if h == 'GEVAI.adhoc.RipperKWrapper.RipperKWrapper':
+                    for model_index, ripper_model in enumerate(model.models):
+                        self.generate_explanations(explainer, f"{h}_{model_index}", kwargs, num_explanations, lambda x: ripper_model.predict_proba(x), sample_x)
+                else:
+                    self.generate_explanations(explainer, h, kwargs, num_explanations, predict_fn, sample_x)
 
                 return True
             else:
                 print("Unsupported LIME explainer")
                 return False
         return False
+
+    def generate_explanations(self, explainer, h, kwargs, num_explanations, predict_fn, sample_x):
+        for i in range(num_explanations):
+            explanation = explainer.explain_instance(
+                data_row=sample_x[i],
+                predict_fn=predict_fn,
+                num_features=self.maxdisplay,
+            )
+            print(f"\n--- Explanation for instance {i} ---")
+            plt.figure()
+            explanation.as_pyplot_figure()
+            plt.tight_layout()
+
+            file_path_dir = f"{kwargs['results_path']}/LIME"
+            if not os.path.exists(file_path_dir):
+                os.makedirs(file_path_dir)
+
+            plt.savefig(f"{file_path_dir}/lime_explanation_{h}_{i}.png")
+            plt.show()

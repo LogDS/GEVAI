@@ -1,10 +1,7 @@
 # random_state=2, verbosity=0, k=2, prune_size=0.33, dl_allowance=64, n_discretize_bins=10
-import os
-import pickle
-
-from sklearn.tree import DecisionTreeClassifier
 
 from GEVAI.adhoc import load_model, save_model
+from GEVAI.adhoc.RipperKWrapper import RipperKWrapper
 from GEVAI.adhoc.generic_algorithm import GenericAlgorithm
 
 
@@ -53,6 +50,10 @@ class RipperK_(GenericAlgorithm):
 
             save_model(models, self.model_filename)
 
-            return models
+            models = RipperKWrapper(models)
+
+            return [models]
         else:
+            if not isinstance(trained_model, RipperKWrapper):
+                return [RipperKWrapper(trained_model)]
             return trained_model
