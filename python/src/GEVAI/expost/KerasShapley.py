@@ -4,7 +4,7 @@ import shap
 from GEVAI.expost.ExPost import ExPost
 
 
-class KerasShapely(ExPost):
+class KerasShapley(ExPost):
 
     def __init__(self, conf):
         self.maxdisplay = conf.maxdisplay

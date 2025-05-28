@@ -160,7 +160,7 @@ def csv_to_tabularray(csv_filepath, caption=None, label=None):
 
 
 if __name__ == '__main__':
-    folder_path = '../../../../results/test'
+    folder_path = '../../../../results/may02'
     output_csv_file = 'output.csv'
     create_metrics_csv(folder_path, output_csv_file)
 

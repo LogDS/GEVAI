@@ -37,7 +37,7 @@ class RunExperiment:
         return models
 
     def run_ex_post(self, models, explainer_type):
-        for idx, model in enumerate(models[:self.conf.TARGET_CLASSES]):
+        for idx, model in enumerate(models[:self.conf.TOP_N]):
             model_name = f"{model.name if hasattr(model, 'name') else explainer_type}"
             hypothesis = f"{str(model).replace(',',';')}"
 
@@ -55,7 +55,7 @@ class RunExperiment:
                 self.ex_post_explainers = ["SHAP"]
 
             for ex_post_explainer in self.ex_post_explainers:
-                if not (ex_post_explainer == 'SHAP' and explainer_type == 'RipperK'):  # TODO: Change this to computation timeout
+                if not (ex_post_explainer == 'SHAP' and explainer_type.startswith('RipperK')):  # TODO: Change this to computation timeout
                     ex_post_time, (ex_post, explanation) = time_function(
                         self.get_explanation_and_explainer,
                         ex_post_explainer,

@@ -1,4 +1,5 @@
 # random_state=2, verbosity=0, k=2, prune_size=0.33, dl_allowance=64, n_discretize_bins=10
+import pandas as pd
 
 from GEVAI.adhoc import load_model, save_model
 from GEVAI.adhoc.RipperKWrapper import RipperKWrapper
@@ -10,6 +11,8 @@ class RipperK_(GenericAlgorithm):
         self.conf = conf
         self.model_filename = "Ripper"
         self.should_load = should_load
+        self.target_classes = conf.TARGET_CLASSES
+        self.top_n = conf.TOP_N
 
     def __call__(self, *args, **kwargs):
         training_x, training_y = args[0], args[1]
@@ -23,9 +26,9 @@ class RipperK_(GenericAlgorithm):
             from GEVAI.utils import fullname
             w = fullname(lw.RIPPER())
 
-            models = []
+            all_class_models = []
 
-            for target_class in range(self.conf.TARGET_CLASSES):
+            for target_class in range(self.target_classes):
                 print(f'Target class: {target_class}')
                 param_grid = {
                     'random_state': self.conf.RK_Random,
@@ -34,7 +37,7 @@ class RipperK_(GenericAlgorithm):
                     'dl_allowance': self.conf.RK_DL_ALLOWANCE,
                     'n_discretize_bins': self.conf.RK_N_DISCRETIZE_BINS
                 }
-                # lw.RIPPER().fit(training_x, training_y == target_class)
+
                 grid_search = GridSearchCV(
                     estimator=lw.RIPPER(),
                     param_grid=param_grid,
@@ -44,15 +47,35 @@ class RipperK_(GenericAlgorithm):
                 grid_search.fit(training_x, training_y == target_class)
                 print("Best Hyperparameters:", grid_search.best_params_)
                 print("Best Accuracy:", grid_search.best_score_)
-                r = lw.RIPPER(**grid_search.best_params_)
-                r.fit(training_x, training_y == target_class)  # TODO: Is this correct to change training_y to Boolean?
-                models.append(r)
+
+                results = pd.DataFrame(grid_search.cv_results_)
+                if 'rank_test_score' in results:
+                    sorted_results = results.sort_values(by='rank_test_score')
+                elif 'mean_test_score' in results:
+                    sorted_results = results.sort_values(by='mean_test_score', ascending=False)
+
+                top_models_data = sorted_results.iloc[:self.top_n]
+                top_models = []
+
+                for i in range(self.top_n):
+                    model = lw.RIPPER(**top_models_data.iloc[i]['params'])
+                    model.fit(training_x, training_y == target_class)  # TODO: Is this correct to change training_y to Boolean?
+                    top_models.append(model)
+
+                all_class_models.append(top_models)
+
+            num_rows = len(all_class_models)
+            num_cols = len(all_class_models[0])
+            models = []
+            for j in range(num_cols):
+                column_values = []
+                for i in range(num_rows):
+                    column_values.append(all_class_models[i][j])
+                models.append(RipperKWrapper(column_values))
 
             save_model(models, self.model_filename)
 
-            models = RipperKWrapper(models)
-
-            return [models]
+            return models
         else:
             if not isinstance(trained_model, RipperKWrapper):
                 return [RipperKWrapper(trained_model)]

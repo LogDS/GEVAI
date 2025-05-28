@@ -10,7 +10,7 @@ if __name__ == '__main__':
     font_bold = fm.FontProperties(fname='./fonts/Satoshi-Bold.ttf', size=11)
     font_title = fm.FontProperties(fname='./fonts/Satoshi-Bold.ttf', size=13)
 
-    csv_name = "../../../../results/apr29/benchmark_5ex_post_explainers.csv" # "apr29/benchmark_5ex_post_explainers.csv"
+    csv_name = "../../../../results/may01/benchmark_5ex_post_explainers.csv" # "apr29/benchmark_5ex_post_explainers.csv"
     cols = list(pd.read_csv(csv_name, nrows=1))
     excluded_columns = ["Hypothesis", "Ad hoc model", "Load configuration", "Load dataset"]
     data = pd.read_csv(csv_name, quotechar="'", usecols=[i for i in cols if i not in excluded_columns])
@@ -49,7 +49,7 @@ if __name__ == '__main__':
             + labs(
                 title='Ad Hoc Types vs. GEVAI Phases',
                 x=ad_hoc_types_column,
-                y='Seconds (log scale)',
+                y='Time (seconds, log scale)',
                 fill='Phase',
                 shape='Phase',
             )

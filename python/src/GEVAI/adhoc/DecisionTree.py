@@ -12,7 +12,7 @@ class DecisionTree_(GenericAlgorithm):
         self.conf = conf
         self.model_filename = "DecisionTree"
         self.should_load = should_load
-        self.target_classes = conf.TARGET_CLASSES
+        self.top_n = conf.TOP_N
 
     def __call__(self, *args, **kwargs):
         training_x, training_y = args[0], args[1]
@@ -46,10 +46,10 @@ class DecisionTree_(GenericAlgorithm):
             elif 'mean_test_score' in results:
                 sorted_results = results.sort_values(by='mean_test_score', ascending=False)
 
-            top_models_data = sorted_results.iloc[:self.target_classes]
+            top_models_data = sorted_results.iloc[:self.top_n]
             top_models = []
 
-            for i in range(self.target_classes):
+            for i in range(self.top_n):
                 model = DecisionTreeClassifier(**top_models_data.iloc[i]['params'])
                 model.fit(training_x, training_y)
                 top_models.append(model)
